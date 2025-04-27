@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダイヤバー検索</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ダイヤバー検索</h1>
+        <form method="get" class="search-form">
+            <div class="form-group">
+                <label>US/EU
+                    <select name="us_eu">
+                        <option value="">--選択してください--</option>
+                        {% for m in us_eu_options %}
+                        <option value="{{ m }}" {% if m == selected_us_eu %}selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Working Shape
+                    <select name="working_shape">
+                        <option value="">--選択してください--</option>
+                        {% for s in working_shape_options %}
+                        <option value="{{ s }}" {% if s == selected_shape %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Max Diameter
+                    <select name="max_diameter">
+                        <option value="">--選択してください--</option>
+                        {% for d in max_diameter_options %}
+                        <option value="{{ d }}" {% if d|string == selected_max_diameter %}selected{% endif %}>{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <button type="submit">検索</button>
+        </form>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    {% for col in results[0].keys() %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    {% for cell in row.values() %}
+                    <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
