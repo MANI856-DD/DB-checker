@@ -25,12 +25,13 @@ def index():
         except ValueError:
             pass
 
-    return render_template('index.html', us_eu_options=us_eu_options,
+    return render_template('index.html', 
+                           df=filtered,  # ← フィルタ済みを渡す
+                           us_eu_options=us_eu_options,
                            working_shape_options=working_shape_options,
                            max_diameter_options=max_diameter_options,
-                           results=filtered.to_dict(orient='records'),
-                           selected_us_eu=selected_us_eu,
-                           selected_shape=selected_shape,
+                           selected_us_eu=selected_us_eu, 
+                           selected_working_shape=selected_shape, 
                            selected_max_diameter=selected_max_diameter)
 
 if __name__ == '__main__':
