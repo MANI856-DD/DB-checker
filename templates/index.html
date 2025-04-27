@@ -7,58 +7,76 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: white;
+            margin: 10px;
+            padding: 0;
+            background-color: #f9f9f9;
         }
-        .search-form {
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        form {
             margin-bottom: 20px;
         }
-        .search-form label {
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        select, button {
-            font-size: 1rem;
-            margin-right: 10px;
-            margin-bottom: 10px;
+        select, input[type="text"], button {
+            font-size: 18px;
             padding: 8px;
-            border-radius: 6px;
+            margin: 5px 5px 5px 0;
+            border-radius: 5px;
             border: 1px solid #ccc;
         }
-        .clear-button {
-            background-color: #f0f0f0;
-            color: black;
-            border: 1px solid #ccc;
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
-        .table-container {
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .table-wrapper {
             overflow-x: auto;
         }
-        table.data {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table.data th, table.data td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-            font-size: 0.9rem;
-        }
         @media screen and (max-width: 600px) {
-            select, button {
-                width: 100%;
+            table, thead, tbody, th, td, tr {
+                font-size: 14px;
+            }
+            select, input[type="text"], button {
+                font-size: 16px;
+                padding: 6px;
             }
         }
     </style>
 </head>
 <body>
-    <h2>DB Checker</h2>
 
-    <form method="get" class="search-form">
+    <h1>DB Checker</h1>
+
+    <form method="get" action="/">
         <label for="us_eu">US/EU:</label>
         <select name="us_eu" id="us_eu">
             <option value="">選択してください</option>
             {% for option in us_eu_options %}
-                <option value="{{ option }}" {% if option == selected_us_eu %}selected{% endif %}>{{ option }}</option>
+                <option value="{{ option }}" {% if selected_us_eu and option == selected_us_eu %}selected{% endif %}>{{ option }}</option>
             {% endfor %}
         </select>
 
@@ -66,35 +84,46 @@
         <select name="working_shape" id="working_shape">
             <option value="">選択してください</option>
             {% for option in working_shape_options %}
-                <option value="{{ option }}" {% if option == selected_working_shape %}selected{% endif %}>{{ option }}</option>
+                <option value="{{ option }}" {% if selected_working_shape and option == selected_working_shape %}selected{% endif %}>{{ option }}</option>
             {% endfor %}
         </select>
 
-        <label for="max_diameter">呼び径:</label>
+        <label for="max_diameter">Max Diameter:</label>
         <select name="max_diameter" id="max_diameter">
             <option value="">選択してください</option>
             {% for option in max_diameter_options %}
-                <option value="{{ option }}" {% if option == selected_max_diameter %}selected{% endif %}>{{ option }}</option>
+                <option value="{{ option }}" {% if selected_max_diameter and option == selected_max_diameter %}selected{% endif %}>{{ option }}</option>
             {% endfor %}
         </select>
 
         <button type="submit">検索</button>
-        <button type="button" class="clear-button" onclick="clearSelection()">クリア</button>
+        <button type="button" onclick="window.location.href='/'">クリア</button>
     </form>
 
-    <div class="table-container">
-        {% for table in tables %}
-            {{ table|safe }}
-        {% endfor %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    {% for col in df.columns %}
+                        {% if col not in ['Material', 'Shank Shape/Length', 'Grit size', '呼び径'] %}
+                            <th>{{ col }}</th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in df.itertuples() %}
+                    <tr>
+                        {% for idx, value in enumerate(row[1:]) %}
+                            {% if df.columns[idx] not in ['Material', 'Shank Shape/Length', 'Grit size', '呼び径'] %}
+                                <td>{{ value }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <script>
-        function clearSelection() {
-            document.getElementById('us_eu').selectedIndex = 0;
-            document.getElementById('working_shape').selectedIndex = 0;
-            document.getElementById('max_diameter').selectedIndex = 0;
-            document.forms[0].submit();
-        }
-    </script>
 </body>
 </html>
