@@ -1,65 +1,100 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ダイヤバー検索</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>DB Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: white;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+        .search-form label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        select, button {
+            font-size: 1rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .clear-button {
+            background-color: #f0f0f0;
+            color: black;
+            border: 1px solid #ccc;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table.data {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table.data th, table.data td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9rem;
+        }
+        @media screen and (max-width: 600px) {
+            select, button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ダイヤバー検索</h1>
-        <form method="get" class="search-form">
-            <div class="form-group">
-                <label>US/EU
-                    <select name="us_eu">
-                        <option value="">--選択してください--</option>
-                        {% for m in us_eu_options %}
-                        <option value="{{ m }}" {% if m == selected_us_eu %}selected{% endif %}>{{ m }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-            <div class="form-group">
-                <label>Working Shape
-                    <select name="working_shape">
-                        <option value="">--選択してください--</option>
-                        {% for s in working_shape_options %}
-                        <option value="{{ s }}" {% if s == selected_shape %}selected{% endif %}>{{ s }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-            <div class="form-group">
-                <label>Max Diameter
-                    <select name="max_diameter">
-                        <option value="">--選択してください--</option>
-                        {% for d in max_diameter_options %}
-                        <option value="{{ d }}" {% if d|string == selected_max_diameter %}selected{% endif %}>{{ d }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-            <button type="submit">検索</button>
-        </form>
-        <table class="result-table">
-            <thead>
-                <tr>
-                    {% for col in results[0].keys() %}
-                    <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in results %}
-                <tr>
-                    {% for cell in row.values() %}
-                    <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <h2>DB Checker</h2>
+
+    <form method="get" class="search-form">
+        <label for="us_eu">US/EU:</label>
+        <select name="us_eu" id="us_eu">
+            <option value="">選択してください</option>
+            {% for option in us_eu_options %}
+                <option value="{{ option }}" {% if option == selected_us_eu %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="working_shape">Working Shape:</label>
+        <select name="working_shape" id="working_shape">
+            <option value="">選択してください</option>
+            {% for option in working_shape_options %}
+                <option value="{{ option }}" {% if option == selected_working_shape %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="max_diameter">呼び径:</label>
+        <select name="max_diameter" id="max_diameter">
+            <option value="">選択してください</option>
+            {% for option in max_diameter_options %}
+                <option value="{{ option }}" {% if option == selected_max_diameter %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">検索</button>
+        <button type="button" class="clear-button" onclick="clearSelection()">クリア</button>
+    </form>
+
+    <div class="table-container">
+        {% for table in tables %}
+            {{ table|safe }}
+        {% endfor %}
     </div>
+
+    <script>
+        function clearSelection() {
+            document.getElementById('us_eu').selectedIndex = 0;
+            document.getElementById('working_shape').selectedIndex = 0;
+            document.getElementById('max_diameter').selectedIndex = 0;
+            document.forms[0].submit();
+        }
+    </script>
 </body>
 </html>
