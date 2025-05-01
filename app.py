@@ -1,38 +1,56 @@
-from flask import Flask, render_template, request
+
+import streamlit as st
 import pandas as pd
 
-app = Flask(__name__, static_folder='static')
-df = pd.read_csv('Book2_fixed_v2.csv', encoding='utf-8')
+df = pd.read_csv("Book2_fixed.csv", encoding="utf-8-sig")
 
-@app.route('/', methods=['GET'])
-def index():
-    us_eu_options = sorted(df['US/EU'].dropna().unique())
-    working_shape_options = sorted(df['Working Shape'].dropna().unique())
-    max_diameter_options = sorted(df['呼び径'].dropna().unique())
-    
-    selected_us_eu = request.args.get('us_eu', '')
-    selected_shape = request.args.get('working_shape', '')
-    selected_max_diameter = request.args.get('max_diameter', '')
-    
-    filtered = df.copy()
-    if selected_us_eu:
-        filtered = filtered[filtered['US/EU'] == selected_us_eu]
-    if selected_shape:
-        filtered = filtered[filtered['Working Shape'] == selected_shape]
-    if selected_max_diameter:
-        try:
-            filtered = filtered[filtered['呼び径'] == float(selected_max_diameter)]
-        except ValueError:
-            pass
+st.set_page_config(page_title="マニー 類似品検索ツール", layout="wide")
+st.markdown("""
+    <style>
+        html, body, [class*="css"] {
+            background-color: #f6f8f9;
+            font-family: 'Segoe UI', sans-serif;
+            color: #2c3e50;
+        }
+        h1 {
+            color: #daaa00;
+            font-weight: 700;
+        }
+        .stDataFrame table {
+            font-size: 14px;
+            background-color: #ffffff;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-    return render_template('index.html', 
-                           df=filtered,  # ← フィルタ済みを渡す
-                           us_eu_options=us_eu_options,
-                           working_shape_options=working_shape_options,
-                           max_diameter_options=max_diameter_options,
-                           selected_us_eu=selected_us_eu, 
-                           selected_working_shape=selected_shape, 
-                           selected_max_diameter=selected_max_diameter)
+st.markdown("<h1>マニー 類似品検索ツール</h1>", unsafe_allow_html=True)
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+col1, col2, col3 = st.columns(3)
+with col1:
+    part_number = st.text_input("品番を入力（例: BC-31）")
+with col2:
+    shape_input = st.text_input("作業部形状を入力（例: Flame, Round, Taper）")
+with col3:
+    diameter_input = st.number_input("最大径を mm 単位で入力（例：1.8）", min_value=0.0, step=0.01)
+    tolerance = st.slider("許容範囲 ± (mm)", 0.0, 0.5, 0.1)
+
+if part_number or diameter_input > 0 or shape_input:
+    df_filtered = df.copy()
+    if part_number:
+        df_filtered = df_filtered[df_filtered["品番"].astype(str).str.contains(part_number, na=False)]
+    if diameter_input > 0:
+        df_filtered = df_filtered[df_filtered["最大径"].between(diameter_input - tolerance, diameter_input + tolerance)]
+    if shape_input:
+        df_filtered = df_filtered[df_filtered["作業部形状"].astype(str).str.contains(shape_input, na=False)]
+
+    # 材料/結合形式を除外
+    if "材料/結合形式" in df_filtered.columns:
+        df_filtered = df_filtered.drop(columns=["材料/結合形式"])
+
+    styled_df = df_filtered.style.set_properties(
+        subset=["品番", "最大径"],
+        **{"font-weight": "bold"}
+    )
+
+    st.write(f"{len(df_filtered)} 件ヒットしました：")
+    st.dataframe(styled_df, use_container_width=True)
