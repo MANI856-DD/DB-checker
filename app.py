@@ -2,15 +2,7 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="DB品番検索", layout="wide")  # ← これが最初の Streamlit コマンドであることが重要
-
-# --- パスワード保護設定 ---
-PASSWORD = "8592"
-password_entered = st.text_input("🔐 パスワードを入力してください", type="password")
-
-if password_entered != PASSWORD:
-    st.warning("正しいパスワードを入力してください")
-    st.stop()
+st.set_page_config(page_title="DB品番検索", layout="wide")
 
 # --- 通常のアプリ開始 ---
 df = pd.read_csv("Book2_fixed.csv", encoding="utf-8-sig")
