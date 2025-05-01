@@ -55,5 +55,7 @@ if part_number or diameter_input > 0 or shape_input:
         **{"font-weight": "bold"}
     )
 
+    styled_df = styled_df.format({"最大径": "{:.2f}"})
+    
     st.write(f"{len(df_filtered)} 件ヒットしました：")
     st.dataframe(styled_df, use_container_width=True)
