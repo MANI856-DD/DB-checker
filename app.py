@@ -2,8 +2,7 @@
 import streamlit as st
 import pandas as pd
 
-# ✅ ページ設定は一番最初に実行する必要がある
-st.set_page_config(page_title="DB品番検索", layout="wide")
+st.set_page_config(page_title="DB品番検索", layout="wide")  # ← これが最初の Streamlit コマンドであることが重要
 
 # --- パスワード保護設定 ---
 PASSWORD = "8592"
