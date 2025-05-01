@@ -56,7 +56,7 @@ if part_number or diameter_input > 0 or shape_input:
     )
 
     styled_df = styled_df.format({
-    "最大径": lambda x: f"{x:.2f}" if pd.notnull(x) else ""
+    "最大径": lambda x: f"{float(x):.2f}" if pd.notnull(x) and str(x).replace('.', '', 1).isdigit() else ""
 })
     
     st.write(f"{len(df_filtered)} 件ヒットしました：")
