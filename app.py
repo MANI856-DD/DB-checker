@@ -42,7 +42,8 @@ if part_number or diameter_input > 0 or shape_input:
         df_filtered = df_filtered[
         df_filtered["品番"].astype(str).str.lower().str.contains(part_number.lower(), na=False)]
     if diameter_input > 0:
-        df_filtered = df_filtered[df_filtered["最大径"].between(diameter_input - tolerance, diameter_input + tolerance)]
+         df_filtered["最大径"] = pd.to_numeric(df_filtered["最大径"], errors="coerce")
+         df_filtered = df_filtered[df_filtered["最大径"].between(diameter_input - tolerance, diameter_input + tolerance, inclusive="both")]
     if shape_input:
         df_filtered = df_filtered[df_filtered["作業部形状"].astype(str).str.contains(shape_input, na=False)]
 
