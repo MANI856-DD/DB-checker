@@ -39,7 +39,8 @@ with col3:
 if part_number or diameter_input > 0 or shape_input:
     df_filtered = df.copy()
     if part_number:
-        df_filtered = df_filtered[df_filtered["品番"].astype(str).str.contains(part_number, na=False)]
+        df_filtered = df_filtered[
+        df_filtered["品番"].astype(str).str.lower().str.contains(part_number.lower(), na=False)]
     if diameter_input > 0:
         df_filtered = df_filtered[df_filtered["最大径"].between(diameter_input - tolerance, diameter_input + tolerance)]
     if shape_input:
