@@ -31,7 +31,7 @@ col1, col2, col3 = st.columns(3)
 with col1:
     part_number = st.text_input("品番を入力（例: BC-31）")
 with col2:
-    shape_input = st.text_input("作業部形状を入力（例: Flame, Round, Taper）")
+    shape_input = st.text_input("作業部形状を入力（例: 001, 199, 294）")
 with col3:
     diameter_input = st.number_input("最大径を mm 単位で入力（例：1.8）", min_value=0.0, step=0.01)
     tolerance = st.slider("許容範囲 ± (mm)", 0.0, 0.5, 0.1)
