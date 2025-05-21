@@ -52,13 +52,14 @@ if part_number or diameter_input > 0 or shape_input:
             df_filtered["作業部形状"].astype(str).str.contains(shape_input, na=False)
         ]
 
-    if "材料/結合形式" in df_filtered.columns:
-        df_filtered = df_filtered.drop(columns=["材料/結合形式"])
-
     # 作業部形状を3桁ゼロ埋め表示（数値のみ）
     df_filtered["作業部形状"] = df_filtered["作業部形状"].apply(
         lambda x: f"{int(x):03}" if pd.notnull(x) and str(x).isdigit() else x
     )
+
+    # 材料/結合形式 は除外、ISOコード列は残す
+    if "材料/結合形式" in df_filtered.columns:
+        df_filtered = df_filtered.drop(columns=["材料/結合形式"])
 
     styled_df = df_filtered.style.set_properties(
         subset=["品番", "最大径"],
