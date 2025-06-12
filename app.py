@@ -47,10 +47,11 @@ if part_number or diameter_input > 0 or shape_input:
         df_filtered = df_filtered[
             df_filtered["最大径"].between(diameter_input - tolerance, diameter_input + tolerance, inclusive="both")
         ]
-    if shape_input:
-        df_filtered = df_filtered[
-            df_filtered["作業部形状"].astype(str).str.contains(shape_input, na=False)
-        ]
+if shape_input:
+    shape_input_zfill = shape_input.zfill(3)
+    df_filtered = df_filtered[
+        df_filtered["作業部形状"].astype(str).str.zfill(3) == shape_input_zfill
+    ]
 
     # 作業部形状を3桁ゼロ埋め表示（数値のみ）
     df_filtered["作業部形状"] = df_filtered["作業部形状"].apply(
